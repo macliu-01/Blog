@@ -40,6 +40,7 @@ public class Comment{
      private Date createTimeLoc = new Date();
 
     
+    
     @OneToMany(mappedBy = "parentComment")
     private List<Comment> replyComments = new ArrayList<Comment>();
 

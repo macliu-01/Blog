@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 @Entity(name = "t_tag")
 public class Tag {
@@ -23,6 +25,7 @@ public class Tag {
     @Column(columnDefinition = "varchar(200)",name = "tag_name",nullable = false)
 	private String tagName;
     
+    @JsonBackReference(value = "blogs")
     @ManyToMany(mappedBy = "tags",cascade = {CascadeType.PERSIST})
     private List<Blog> blogs = new ArrayList<>();
     

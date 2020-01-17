@@ -42,11 +42,14 @@ public class BlogServiceImpl implements BlogService {
 	@Autowired
 	private TypeRespository typeRespository;
 
+	
 	@Override
 	public CommonResponse getAllBlogs(Blog blog) {
 	
 		
-		Page<Blog> blogs = getAllBlog(blog, PageRequest.of(0, 10));
+//		Page<Blog> blogs = getAllBlog(blog, PageRequest.of(0, 10));
+		
+		Page<Blog> blogs = blogRespository.findAll(getAllBlog1(blog), PageRequest.of(0, 10));
 		
 		long totalCount = blogs.getTotalElements();
 		
@@ -118,6 +121,9 @@ public class BlogServiceImpl implements BlogService {
 
 	
 	private Page<Blog> getAllBlog(Blog blog, Pageable page) {
+		
+		
+		
 		return blogRespository.findAll(new Specification<Blog>() {
 			/**
 			 * 
@@ -127,12 +133,16 @@ public class BlogServiceImpl implements BlogService {
 			@Override
 			public Predicate toPredicate(Root<Blog> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
 				 List<Predicate> predicates = new ArrayList<>();
+//					 Join<Blog,Type> join = root.join("id",JoinType.INNER);
+//					 predicates.add(criteriaBuilder.equal(join.get("type").get("id"),blog.getType().getId()));
+
 	                if (!"".equals(blog.getTitle()) && blog.getTitle() != null) {
 	                    predicates.add(criteriaBuilder.like(root.<String>get("title"), "%" + blog.getTitle() + "%"));
 	                }
-	                if (blog.getId() != null) {
-	                    predicates.add(criteriaBuilder.equal(root.<Type>get("type").get("id"), blog.getId()));
-	                }
+	                if (blog.getType().getId() != null) {
+	                    predicates.add(criteriaBuilder.equal(root.<Type>get("type").get("id"), blog.getType().getId()));
+	                }	                       
+	                
 	                if (blog.isRecommend()) {
 	                    predicates.add(criteriaBuilder.equal(root.<Boolean>get("recommend"), blog.isRecommend()));
 	                }
@@ -141,11 +151,36 @@ public class BlogServiceImpl implements BlogService {
 	                return query.getRestriction();
 	            }
 		},page);
+		
+	  
+ 
 	}
-
-
-
 	
+		private Specification<Blog> getAllBlog1(Blog blog){
+			Specification<Blog> blog1 = (Root<Blog> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder)-> {
+				 List<Predicate> predicates = new ArrayList<>();
+	//				 Join<Blog,Type> join = root.join("id",JoinType.INNER);
+	//				 predicates.add(criteriaBuilder.equal(join.get("type").get("id"),blog.getType().getId()));
+	
+		           if (!"".equals(blog.getTitle()) && blog.getTitle() != null) {
+		               predicates.add(criteriaBuilder.like(root.<String>get("title"), "%" + blog.getTitle() + "%"));
+		           }
+		           if (blog.getType().getId() != null) {
+		               predicates.add(criteriaBuilder.equal(root.<Type>get("type").get("id"), blog.getType().getId()));
+		           }	                       
+		           
+		           if (blog.isRecommend()) {
+		               predicates.add(criteriaBuilder.equal(root.<Boolean>get("recommend"), blog.isRecommend()));
+		           }
+		           query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+		           
+		           return query.getRestriction();
+		       };
+	
+	
+		       return blog1;
+		}
+		
 	
 	
 }

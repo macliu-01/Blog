@@ -19,6 +19,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 
 @Entity(name = "t_blog")
@@ -47,14 +49,16 @@ public class Blog {
     @Version
     private Date modify_time;
     
+    
     @ManyToOne
     private Type type;
-
+    
     @ManyToMany
     private List<Tag> tags =new ArrayList<Tag>();
 
+    @JsonBackReference(value = "comments")
     @OneToMany(mappedBy = "blog",cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
-    private List<Comment> comments= new ArrayList<>(); 
+    private List<Comment> comments= new ArrayList<Comment>(); 
     
     //不需要放进数据库
     @Transient

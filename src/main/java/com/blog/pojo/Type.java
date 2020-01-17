@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 @Entity(name="t_type")
 public class Type {
@@ -23,7 +25,7 @@ public class Type {
     
    
 
-
+    @JsonBackReference(value = "blogs")
 	@OneToMany(mappedBy = "type")
     private List<Blog> blogs = new ArrayList<>();
     
